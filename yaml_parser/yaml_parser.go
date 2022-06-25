@@ -48,26 +48,26 @@ type Trigger struct {
 // 	Actions []*Action "@@*"
 // }
 
-// type Action struct {
-// 	Call *Call
-// 	//TODO: how to do "or"
-// 	Tx *Tx
-// }
+type Action struct {
+	Call *Call
+	//TODO: how to do "or"
+	Tx *Tx `|`
+}
 
-// type Call struct {
-// 	Address string `Call Colon @Address`
-// 	Args    []*Arg
-// }
+type Call struct {
+	Address string `Call Colon @Address`
+	Args    []*Arg
+}
 
 type Arg struct {
 	Uint256 int    `@Number`
 	Address string `| @Address`
 }
 
-// type Tx struct {
-// 	Address string `Tx Colon @Address`
-// 	Args    []*Arg
-// }
+type Tx struct {
+	Address string `Tx Colon @Address`
+	Args    []*Arg
+}
 
 type EveryXInterval struct {
 	BlockInterval   int `(("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")) Colon`
@@ -80,20 +80,15 @@ type EveryXInterval struct {
 var (
 	yamlLexer = lexer.MustSimple([]lexer.SimpleRule{
 		{"Comment", `(?:#|//)[^\n]*\n?`},
+		{"Address", `0[xX]{64}`},
+
 		{"Identifier", `[a-zA-Z]\w*`},
 		{"Number", `(?:\d*\.)?\d+`},
 		{"Whitespace", `[ \t\n\r]+`},
 		{"Eq", `==`},
 		{"Colon", `:`},
-		{"Underscore", "_"},
-		{"On", `ON`},
-		{"Event", `EVENT`},
-		{"When", `WHEN`},
-		{"Second", `SECOND(S?)`},
-		{"Every", `EVERY`},
 
-		//
-		{"Address", `"0x" [0-9A-Fa-f]{64}`},
+		{"Underscore", "_"},
 
 		//
 		{"EventSignature", `"0x" [0-9A-Fa-f]{8}`},
