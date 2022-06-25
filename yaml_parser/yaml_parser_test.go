@@ -113,25 +113,25 @@ func TestTrigger(t *testing.T) {
 
 }
 
-func TestCall(t *testing.T) {
+// func TestCall(t *testing.T) {
 
-	localParser := participle.MustBuild(&Call{},
-		participle.Lexer(yamlLexer),
-		participle.Elide("Comment", "Whitespace"),
-		participle.UseLookahead(2),
-	)
+// 	localParser := participle.MustBuild(&Call{},
+// 		participle.Lexer(yamlLexer),
+// 		participle.Elide("Comment", "Whitespace"),
+// 		participle.UseLookahead(2),
+// 	)
 
-	ast := &Call{}
+// 	ast := &Call{}
 
-	fileContents := "CALL 0x000000000000000000000000000000000000dEaD(functionSig(arg1,arg2), 0x000000000000000000000000000000000000dEaD, 2093490234)"
+// 	fileContents := "CALL 0x000000000000000000000000000000000000dEaD(functionSig(arg1,arg2), 0x000000000000000000000000000000000000dEaD, 2093490234)"
 
-	err := localParser.ParseString("fileName", fileContents, ast)
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
+// 	err := localParser.ParseString("fileName", fileContents, ast)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		t.Fail()
+// 	}
 
-}
+// }
 
 func TestTx(t *testing.T) {
 
@@ -143,7 +143,7 @@ func TestTx(t *testing.T) {
 
 	ast := &Tx{}
 
-	fileContents := "TX 0x000000000000000000000000000000000000dEaD(functionSig())"
+	fileContents := "TX: 0x000000000000000000000000000000000000dEaD(functionSig())"
 
 	err := localParser.ParseString("fileName", fileContents, ast)
 	if err != nil {
@@ -153,22 +153,46 @@ func TestTx(t *testing.T) {
 
 }
 
-// func TestAction(t *testing.T) {
+func TestAction(t *testing.T) {
 
-// 	localParser := participle.MustBuild(&Action{},
+	localParser := participle.MustBuild(&Action{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &Action{}
+
+	fileContents := "TX: 0x000000000000000000000000000000000000dEaD(functionSig())"
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+}
+
+// func TestActions(t *testing.T) {
+
+// 	localParser := participle.MustBuild(&Actions{},
 // 		participle.Lexer(yamlLexer),
 // 		participle.Elide("Comment", "Whitespace"),
 // 		participle.UseLookahead(2),
 // 	)
 
-// 	ast := &Action{}
+// 	ast := &Actions{}
 
-// 	fileContents := "CALL 0x000000000000000000000000000000000000dEaDfunctionSig()"
+// 	fileContents := `TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+
+// 	TX: 0x000000000000000000000000000000000000dEaD(functionSig())`
 
 // 	err := localParser.ParseString("fileName", fileContents, ast)
 // 	if err != nil {
 // 		fmt.Println(err)
 // 		t.Fail()
 // 	}
+
+// 	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
 
 // }

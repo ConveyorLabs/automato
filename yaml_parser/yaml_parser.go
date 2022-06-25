@@ -28,7 +28,6 @@ func ParseAutomationYaml() {
 }
 
 // type YamlFile struct {
-// 	// WhenBlock *WhenBlock
 // 	AutomationTasks []*AutomationTask "@@*"
 // }
 
@@ -37,9 +36,9 @@ func ParseAutomationYaml() {
 // 	Actions *Actions "@@*"
 // }
 
-// type Actions struct {
-// 	Actions []*Action "@@*"
-// }
+type Actions struct {
+	Actions []*Action "@@*"
+}
 
 type Trigger struct {
 	//TODO: how to do ors
@@ -50,9 +49,11 @@ type Trigger struct {
 }
 
 type Action struct {
-	Call *Call
-	//TODO: how to do "or"
-	// Tx *Tx `|`
+	Tx *Tx `@@`
+	//TODO: set it up so that it can call and get the
+	//return data to pass into a tx
+	// Call *Call
+
 }
 
 type Arg struct {
@@ -60,12 +61,12 @@ type Arg struct {
 	Address string `| @Address`
 }
 
-type Call struct {
-	Call string `"CALL" @FunctionCall`
-}
+// type Call struct {
+// 	Call string `"CALL" Colon  @FunctionCall`
+// }
 
 type Tx struct {
-	Tx string `"TX" @FunctionCall`
+	Tx string `"TX" Colon @FunctionCall`
 }
 
 //Lexer / Parser
