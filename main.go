@@ -36,25 +36,44 @@ import (
 )
 
 type YamlFile struct {
-	WhenBlock *WhenBlock
-	// Symbols   []*Symbol "@@*"
+	// WhenBlock *WhenBlock
+	Triggers []*Trigger "@@*"
 }
 
-type WhenBlock struct {
-	BlockNumber int `"when block" @@Number`
+type Trigger struct {
+	WhenBlock      int    `WhenBlock (Eq) @Number`
+	OnEvent        string `OnEvent @EventSignature`
+	EveryXInterval *EveryXInterval
+
+	// String      string ` | @Ident`
+	// Number int `| @Number`
 }
 
-type Symbol struct {
-	String string ` @Ident`
-	Number int    `| @Number`
+type EveryXInterval struct {
+	BlockInterval   int `Every @Number? Block`
+	SecondsInterval int `Every @Number Second`
+	//Add more interval options
 }
 
 var (
 	yamlLexer = lexer.MustSimple([]lexer.SimpleRule{
 		{"Comment", `(?:#|//)[^\n]*\n?`},
-		{"Ident", `[a-zA-Z]\w*`},
+		{"Identifier", `[a-zA-Z]\w*`},
 		{"Number", `(?:\d*\.)?\d+`},
 		{"Whitespace", `[ \t\n\r]+`},
+		{"Eq", `==`},
+
+		//
+		{"EventSignature", `"0x" [0-9A-Fa-f]{8}`},
+
+		//Triggers
+		{"WhenBlock", `when block`},
+		{"OnEvent", `on event`},
+		{"Every", `every`},
+
+		//Intervals
+		{"Block", `block(s?)`},
+		{"Second", `second(s?)`},
 	})
 
 	parser = participle.MustBuild(&YamlFile{},
@@ -68,14 +87,7 @@ func main() {
 
 	ast := &YamlFile{}
 
-	fileContents := `
-	//some comment
-	//thing
-
-	//230493409
-	when block 1230934
-
-	//another thing
+	fileContents := `when block 123093
 	
 	`
 
