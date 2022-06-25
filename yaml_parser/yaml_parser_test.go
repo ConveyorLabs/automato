@@ -47,36 +47,6 @@ func TestUint256(t *testing.T) {
 
 }
 
-func TestBlockInterval(t *testing.T) {
-
-	localParser := participle.MustBuild(&EveryXInterval{},
-		participle.Lexer(yamlLexer),
-		participle.Elide("Comment", "Whitespace"),
-		participle.UseLookahead(2),
-	)
-
-	ast := &EveryXInterval{}
-
-	fileContents := "EVERY 309324 BLOCKS:"
-
-	//TODO: change to parse and read in yaml file and parse
-	err := localParser.ParseString("fileName", fileContents, ast)
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	fileContents = "EVERY BLOCK:"
-
-	//TODO: change to parse and read in yaml file and parse
-	err = localParser.ParseString("fileName", fileContents, ast)
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-}
-
 func TestTrigger(t *testing.T) {
 
 	//test when block
@@ -96,9 +66,44 @@ func TestTrigger(t *testing.T) {
 		t.Fail()
 	}
 
-	// //test on event
+	//test on event
+	ast = &Trigger{}
 
 	fileContents = "ON EVENT 0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c:"
+
+	err = localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	//test every x interval
+
+	ast = &Trigger{}
+
+	fileContents = "EVERY BLOCK:"
+
+	err = localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	//test every x blocks
+	ast = &Trigger{}
+
+	fileContents = "EVERY 309324 BLOCKS:"
+
+	err = localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	//test every block
+
+	fileContents = "EVERY BLOCK:"
+	ast = &Trigger{}
 
 	err = localParser.ParseString("fileName", fileContents, ast)
 	if err != nil {

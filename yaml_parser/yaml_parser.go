@@ -39,9 +39,10 @@ func ParseAutomationYaml() {
 
 type Trigger struct {
 	//TODO: how to do ors
-	WhenBlock int    `"WHEN" "BLOCK" Eq @Number Colon`
-	OnEvent   string `| "ON" "EVENT" @EventSignature Colon`
-	// EveryXInterval *EveryXInterval
+	WhenBlock       int    `"WHEN" "BLOCK" Eq @Number Colon`
+	OnEvent         string `| "ON" "EVENT" @EventSignature Colon`
+	BlockInterval   int    `| (("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")) Colon`
+	SecondsInterval int    `| (("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")) Colon`
 }
 
 // type Actions struct {
@@ -69,19 +70,12 @@ type Tx struct {
 	Args    []*Arg
 }
 
-type EveryXInterval struct {
-	BlockInterval   int `(("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")) Colon`
-	SecondsInterval int `| (("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")) Colon`
-
-	//Add more interval options
-}
-
 //Lexer / Parser
 var (
 	yamlLexer = lexer.MustSimple([]lexer.SimpleRule{
 		{"Comment", `(?:#|//)[^\n]*\n?`},
+		{"EventSignature", `0[xX][0-9a-fA-F]{64}`},
 		{"Address", `0[xX][0-9a-fA-F]{40}`},
-
 		{"Identifier", `[a-zA-Z]\w*`},
 		{"Number", `(?:\d*\.)?\d+`},
 		{"Whitespace", `[ \t\n\r]+`},
@@ -91,7 +85,6 @@ var (
 		{"Underscore", "_"},
 
 		//
-		{"EventSignature", `0[xX][0-9a-fA-F]{64}`},
 		//
 		//Triggers
 		// {"WhenBlock", `WHEN Underscore Block`},
