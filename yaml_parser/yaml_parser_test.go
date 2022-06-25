@@ -112,3 +112,63 @@ func TestTrigger(t *testing.T) {
 	}
 
 }
+
+func TestCall(t *testing.T) {
+
+	localParser := participle.MustBuild(&Call{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &Call{}
+
+	fileContents := "CALL 0x000000000000000000000000000000000000dEaD(functionSig(arg1,arg2), 0x000000000000000000000000000000000000dEaD, 2093490234)"
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+}
+
+func TestTx(t *testing.T) {
+
+	localParser := participle.MustBuild(&Tx{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &Tx{}
+
+	fileContents := "TX 0x000000000000000000000000000000000000dEaD(functionSig())"
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+}
+
+// func TestAction(t *testing.T) {
+
+// 	localParser := participle.MustBuild(&Action{},
+// 		participle.Lexer(yamlLexer),
+// 		participle.Elide("Comment", "Whitespace"),
+// 		participle.UseLookahead(2),
+// 	)
+
+// 	ast := &Action{}
+
+// 	fileContents := "CALL 0x000000000000000000000000000000000000dEaDfunctionSig()"
+
+// 	err := localParser.ParseString("fileName", fileContents, ast)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		t.Fail()
+// 	}
+
+// }

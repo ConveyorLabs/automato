@@ -37,6 +37,10 @@ func ParseAutomationYaml() {
 // 	Actions *Actions "@@*"
 // }
 
+// type Actions struct {
+// 	Actions []*Action "@@*"
+// }
+
 type Trigger struct {
 	//TODO: how to do ors
 	WhenBlock       int    `"WHEN" "BLOCK" Eq @Number Colon`
@@ -45,19 +49,10 @@ type Trigger struct {
 	SecondsInterval int    `| (("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")) Colon`
 }
 
-// type Actions struct {
-// 	Actions []*Action "@@*"
-// }
-
 type Action struct {
 	Call *Call
 	//TODO: how to do "or"
-	Tx *Tx `|`
-}
-
-type Call struct {
-	Address string `Call Colon @Address`
-	Args    []*Arg
+	// Tx *Tx `|`
 }
 
 type Arg struct {
@@ -65,14 +60,19 @@ type Arg struct {
 	Address string `| @Address`
 }
 
+type Call struct {
+	Call string `"CALL" @FunctionCall`
+}
+
 type Tx struct {
-	Address string `"TX" "TO" @Address Colon`
-	Args    []*Arg
+	Tx string `"TX" @FunctionCall`
 }
 
 //Lexer / Parser
 var (
 	yamlLexer = lexer.MustSimple([]lexer.SimpleRule{
+		//If you got here, please dont look at this regex
+		{"FunctionCall", `0[xX][0-9a-fA-F]{40}\([a-zA-Z]+\([a-zA-Z0-9]*(,[a-zA-Z0-9]*)*\)(\s*,\s*[a-zA-Z0-9]+\s*)*\)`},
 		{"Comment", `(?:#|//)[^\n]*\n?`},
 		{"EventSignature", `0[xX][0-9a-fA-F]{64}`},
 		{"Address", `0[xX][0-9a-fA-F]{40}`},
@@ -81,15 +81,7 @@ var (
 		{"Whitespace", `[ \t\n\r]+`},
 		{"Eq", `==`},
 		{"Colon", `:`},
-
 		{"Underscore", "_"},
-
-		//
-		//
-		//Triggers
-		// {"WhenBlock", `WHEN Underscore Block`},
-		// {"OnEvent", `On Underscore Event`},
-		// {"EveryXBlock", `Every Underscore Number Underscore Block`},
 
 		//TODO:
 		{"Indent", `four spaces or a tab`},
