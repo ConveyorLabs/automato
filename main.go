@@ -36,11 +36,12 @@ import (
 )
 
 type YamlFile struct {
-	Symbols []*Symbol "@@*"
+	WhenBlock *WhenBlock
+	// Symbols   []*Symbol "@@*"
 }
 
 type WhenBlock struct {
-	BlockNumber int `when block @Number`
+	BlockNumber int `"when block" @@Number`
 }
 
 type Symbol struct {
@@ -69,12 +70,12 @@ func main() {
 
 	fileContents := `
 	//some comment
-	thing
+	//thing
 
-	230493409
+	//230493409
 	when block 1230934
 
-	another thing
+	//another thing
 	
 	`
 
