@@ -37,16 +37,43 @@ import (
 
 type YamlFile struct {
 	// WhenBlock *WhenBlock
-	Triggers []*Trigger "@@*"
+	Automation []*Automation "@@*"
+}
+
+type Automation struct {
+	Trigger *Trigger "@@*"
+	Actions *Actions "@@*"
 }
 
 type Trigger struct {
-	WhenBlock      int    `WhenBlock (Eq) @Number`
-	OnEvent        string `OnEvent @EventSignature`
+	WhenBlock      int    `WhenBlock (Eq) @Number Colon`
+	OnEvent        string `OnEvent Colon @EventSignature`
 	EveryXInterval *EveryXInterval
+}
 
-	// String      string ` | @Ident`
-	// Number int `| @Number`
+type Actions struct {
+	Actions []*Action "@@*"
+}
+
+type Action struct {
+	Call *Call
+	//TODO: how to do "or"
+	Tx *Tx
+}
+
+type Call struct {
+	Address string `Call Colon @Address`
+	Args    []*Arg
+}
+
+type Arg struct {
+	Uint256 int    `@Number`
+	Address string `| @Address`
+}
+
+type Tx struct {
+	Address string `Tx Colon @Address`
+	Args    []*Arg
 }
 
 type EveryXInterval struct {
@@ -62,18 +89,26 @@ var (
 		{"Number", `(?:\d*\.)?\d+`},
 		{"Whitespace", `[ \t\n\r]+`},
 		{"Eq", `==`},
+		{"Colon", `:`},
+
+		//
+		{"Address", `"0x" [0-9A-Fa-f]{64}`},
 
 		//
 		{"EventSignature", `"0x" [0-9A-Fa-f]{8}`},
 
 		//Triggers
-		{"WhenBlock", `when block`},
-		{"OnEvent", `on event`},
-		{"Every", `every`},
+		{"WhenBlock", `WHEN_BLOCK`},
+		{"OnEvent", `ON_EVENT`},
+		{"Every", `EVERY`},
 
 		//Intervals
-		{"Block", `block(s?)`},
-		{"Second", `second(s?)`},
+		{"Block", `BLOCK(S?)`},
+		{"Second", `SECOND(S?)`},
+
+		//Actions
+		{"Call", `CALL`},
+		{"Tx", `TX`},
 	})
 
 	parser = participle.MustBuild(&YamlFile{},
