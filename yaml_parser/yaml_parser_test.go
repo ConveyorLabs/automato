@@ -223,18 +223,20 @@ func TestAutomationTask(t *testing.T) {
 
 }
 
-func Test(t *testing.T) {
+func TestYamlFile(t *testing.T) {
 
-	localParser := participle.MustBuild(&AutomationTask{},
+	localParser := participle.MustBuild(&YamlFile{},
 		participle.Lexer(yamlLexer),
 		participle.Elide("Comment", "Whitespace"),
 		participle.UseLookahead(2),
 	)
 
-	ast := &AutomationTask{}
+	ast := &YamlFile{}
 
 	fileContents := `
 	EVERY 10 BLOCKS:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+	WHEN BLOCK == 1000230493:
 		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
   `
 
