@@ -6,6 +6,7 @@ require (
 	github.com/alecthomas/participle/v2 v2.0.0-alpha9
 	github.com/alecthomas/repr v0.0.0-20210801044451-80ca428c5142
 	github.com/ethereum/go-ethereum v1.10.19
+	github.com/joho/godotenv v1.4.0
 )
 
 require (
@@ -16,7 +17,6 @@ require (
 	github.com/go-ole/go-ole v1.2.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/stretchr/testify v1.7.2 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
