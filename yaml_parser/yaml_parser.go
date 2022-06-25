@@ -80,7 +80,7 @@ type EveryXInterval struct {
 var (
 	yamlLexer = lexer.MustSimple([]lexer.SimpleRule{
 		{"Comment", `(?:#|//)[^\n]*\n?`},
-		{"Address", `0[xX]{64}`},
+		{"Address", `0[xX][0-9a-fA-F]{40}`},
 
 		{"Identifier", `[a-zA-Z]\w*`},
 		{"Number", `(?:\d*\.)?\d+`},
@@ -91,7 +91,7 @@ var (
 		{"Underscore", "_"},
 
 		//
-		{"EventSignature", `"0x" [0-9A-Fa-f]{8}`},
+		{"EventSignature", `0[xX][0-9a-fA-F]{64}`},
 		//
 		{"Call", `CALL`},
 		{"Tx", `TX`},

@@ -17,9 +17,7 @@ func TestAddress(t *testing.T) {
 
 	ast := &Arg{}
 
-	fileContents := `a`
-
-	// 000000000000000000000000000000000000dEaD`
+	fileContents := `0x000000000000000000000000000000000000dEaD`
 
 	err := localParser.ParseString("fileName", fileContents, ast)
 	if err != nil {
