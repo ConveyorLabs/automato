@@ -46,8 +46,9 @@ type Automation struct {
 }
 
 type Trigger struct {
-	WhenBlock      int    `WhenBlock (Eq) @Number Colon`
-	OnEvent        string `OnEvent Colon @EventSignature`
+	//TODO: how to do ors
+	WhenBlock      int    `When Block Eq @Number Colon`
+	OnEvent        string `On Event Colon @EventSignature`
 	EveryXInterval *EveryXInterval
 }
 
@@ -77,8 +78,8 @@ type Tx struct {
 }
 
 type EveryXInterval struct {
-	BlockInterval   int `Every @Number? Block`
-	SecondsInterval int `Every @Number Second`
+	BlockInterval   int `Every Underscore @Number? Underscore Block`
+	SecondsInterval int `Every Underscore @Number Underscore Second`
 	//Add more interval options
 }
 
@@ -90,25 +91,29 @@ var (
 		{"Whitespace", `[ \t\n\r]+`},
 		{"Eq", `==`},
 		{"Colon", `:`},
+		{"Underscore", "_"},
+		{"On", `ON`},
+		{"Event", `EVENT`},
+		{"When", `WHEN`},
+		{"Block", `(BLOCK)(S)?`},
+		{"Second", `SECOND(S?)`},
+		{"Every", `EVERY`},
 
 		//
 		{"Address", `"0x" [0-9A-Fa-f]{64}`},
 
 		//
 		{"EventSignature", `"0x" [0-9A-Fa-f]{8}`},
-
-		//Triggers
-		{"WhenBlock", `WHEN_BLOCK`},
-		{"OnEvent", `ON_EVENT`},
-		{"Every", `EVERY`},
-
-		//Intervals
-		{"Block", `BLOCK(S?)`},
-		{"Second", `SECOND(S?)`},
-
-		//Actions
+		//
 		{"Call", `CALL`},
 		{"Tx", `TX`},
+		//Triggers
+		// {"WhenBlock", `WHEN Underscore Block`},
+		// {"OnEvent", `On Underscore Event`},
+		// {"EveryXBlock", `Every Underscore Number Underscore Block`},
+
+		//TODO:
+		{"Indent", `four spaces or a tab`},
 	})
 
 	parser = participle.MustBuild(&YamlFile{},
