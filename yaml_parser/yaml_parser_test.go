@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/alecthomas/participle/v2"
+	"github.com/alecthomas/repr"
 )
 
 func TestAddress(t *testing.T) {
@@ -47,7 +48,7 @@ func TestUint256(t *testing.T) {
 
 }
 
-func TestTrigger(t *testing.T) {
+func TestTriggerConditions(t *testing.T) {
 
 	//test when block
 	localParser := participle.MustBuild(&Trigger{},
@@ -173,26 +174,76 @@ func TestAction(t *testing.T) {
 
 }
 
-// func TestActions(t *testing.T) {
+func TestActions(t *testing.T) {
 
-// 	localParser := participle.MustBuild(&Actions{},
-// 		participle.Lexer(yamlLexer),
-// 		participle.Elide("Comment", "Whitespace"),
-// 		participle.UseLookahead(2),
-// 	)
+	localParser := participle.MustBuild(&Actions{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
 
-// 	ast := &Actions{}
+	ast := &Actions{}
 
-// 	fileContents := `TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+	fileContents := `TX: 0x000000000000000000000000000000000000dEaD(functionSig())
 
-// 	TX: 0x000000000000000000000000000000000000dEaD(functionSig())`
+	TX: 0x000000000000000000000000000000000000dEaD(functionSig())`
 
-// 	err := localParser.ParseString("fileName", fileContents, ast)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		t.Fail()
-// 	}
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
 
-// 	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
+	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
 
-// }
+}
+
+func TestAutomationTask(t *testing.T) {
+
+	localParser := participle.MustBuild(&AutomationTask{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &AutomationTask{}
+
+	fileContents := `
+	EVERY 10 BLOCKS:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+  `
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
+
+}
+
+func Test(t *testing.T) {
+
+	localParser := participle.MustBuild(&AutomationTask{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &AutomationTask{}
+
+	fileContents := `
+	EVERY 10 BLOCKS:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+  `
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
+
+}

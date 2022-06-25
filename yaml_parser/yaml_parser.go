@@ -27,14 +27,14 @@ func ParseAutomationYaml() {
 
 }
 
-// type YamlFile struct {
-// 	AutomationTasks []*AutomationTask "@@*"
-// }
+type YamlFile struct {
+	AutomationTasks []*AutomationTask "@@*"
+}
 
-// type AutomationTask struct {
-// 	Trigger *Trigger "@@*"
-// 	Actions *Actions "@@*"
-// }
+type AutomationTask struct {
+	Trigger *Trigger "@@"
+	Actions *Actions `@@`
+}
 
 type Actions struct {
 	Actions []*Action "@@*"
