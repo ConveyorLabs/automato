@@ -65,7 +65,7 @@ type Arg struct {
 }
 
 type Tx struct {
-	Address string `Tx Colon @Address`
+	Address string `"TX" "TO" @Address Colon`
 	Args    []*Arg
 }
 
@@ -93,8 +93,6 @@ var (
 		//
 		{"EventSignature", `0[xX][0-9a-fA-F]{64}`},
 		//
-		{"Call", `CALL`},
-		{"Tx", `TX`},
 		//Triggers
 		// {"WhenBlock", `WHEN Underscore Block`},
 		// {"OnEvent", `On Underscore Event`},
