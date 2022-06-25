@@ -1,1 +1,5 @@
 package yamlParser
+
+func ParseYamlFile() {
+
+}
