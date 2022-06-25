@@ -37,12 +37,12 @@ func ParseAutomationYaml() {
 // 	Actions *Actions "@@*"
 // }
 
-// type Trigger struct {
-// 	//TODO: how to do ors
-// 	WhenBlock      int    `When Block Eq @Number Colon`
-// 	OnEvent        string `On Event Colon @EventSignature`
-// 	EveryXInterval *EveryXInterval
-// }
+type Trigger struct {
+	//TODO: how to do ors
+	WhenBlock int    `"WHEN" "BLOCK" Eq @Number Colon`
+	OnEvent   string `| "ON" "EVENT" @EventSignature Colon`
+	// EveryXInterval *EveryXInterval
+}
 
 // type Actions struct {
 // 	Actions []*Action "@@*"
@@ -70,8 +70,8 @@ type Arg struct {
 // }
 
 type EveryXInterval struct {
-	BlockInterval   int `("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")`
-	SecondsInterval int `| ("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")`
+	BlockInterval   int `(("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")) Colon`
+	SecondsInterval int `| (("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")) Colon`
 
 	//Add more interval options
 }
