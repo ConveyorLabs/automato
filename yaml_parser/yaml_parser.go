@@ -10,11 +10,11 @@ import (
 	"github.com/alecthomas/participle/v2/lexer"
 )
 
-func ParseYamlFile() {
+func ParseAutomationYaml() {
 
-	ast := &YamlFile{}
+	ast := &Arg{}
 
-	fileContents := `when block 123093`
+	fileContents := "234092340923"
 
 	//TODO: change to parse and read in yaml file and parse
 	err := parser.ParseString("fileName", fileContents, ast)
@@ -27,51 +27,52 @@ func ParseYamlFile() {
 
 }
 
-type YamlFile struct {
-	// WhenBlock *WhenBlock
-	Automation []*Automation "@@*"
-}
+// type YamlFile struct {
+// 	// WhenBlock *WhenBlock
+// 	AutomationTasks []*AutomationTask "@@*"
+// }
 
-type Automation struct {
-	Trigger *Trigger "@@*"
-	Actions *Actions "@@*"
-}
+// type AutomationTask struct {
+// 	Trigger *Trigger "@@*"
+// 	Actions *Actions "@@*"
+// }
 
-type Trigger struct {
-	//TODO: how to do ors
-	WhenBlock      int    `When Block Eq @Number Colon`
-	OnEvent        string `On Event Colon @EventSignature`
-	EveryXInterval *EveryXInterval
-}
+// type Trigger struct {
+// 	//TODO: how to do ors
+// 	WhenBlock      int    `When Block Eq @Number Colon`
+// 	OnEvent        string `On Event Colon @EventSignature`
+// 	EveryXInterval *EveryXInterval
+// }
 
-type Actions struct {
-	Actions []*Action "@@*"
-}
+// type Actions struct {
+// 	Actions []*Action "@@*"
+// }
 
-type Action struct {
-	Call *Call
-	//TODO: how to do "or"
-	Tx *Tx
-}
+// type Action struct {
+// 	Call *Call
+// 	//TODO: how to do "or"
+// 	Tx *Tx
+// }
 
-type Call struct {
-	Address string `Call Colon @Address`
-	Args    []*Arg
-}
+// type Call struct {
+// 	Address string `Call Colon @Address`
+// 	Args    []*Arg
+// }
 
 type Arg struct {
 	Uint256 int    `@Number`
 	Address string `| @Address`
 }
 
-type Tx struct {
-	Address string `Tx Colon @Address`
-	Args    []*Arg
-}
+// type Tx struct {
+// 	Address string `Tx Colon @Address`
+// 	Args    []*Arg
+// }
 
 type EveryXInterval struct {
-	BlockInterval   int `Every Underscore @Number? Underscore Block`
-	SecondsInterval int `Every Underscore @Number Underscore Second`
+	BlockInterval   int `("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")`
+	SecondsInterval int `| ("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")`
+
 	//Add more interval options
 }
 
@@ -88,7 +89,6 @@ var (
 		{"On", `ON`},
 		{"Event", `EVENT`},
 		{"When", `WHEN`},
-		{"Block", `(BLOCK)(S)?`},
 		{"Second", `SECOND(S?)`},
 		{"Every", `EVERY`},
 
@@ -109,7 +109,7 @@ var (
 		{"Indent", `four spaces or a tab`},
 	})
 
-	parser = participle.MustBuild(&YamlFile{},
+	parser = participle.MustBuild(&Arg{},
 		participle.Lexer(yamlLexer),
 		participle.Elide("Comment", "Whitespace"),
 		participle.UseLookahead(2),

@@ -1,6 +1,6 @@
 
 //some action
-WHEN_BLOCK == 1000230493:
+WHEN BLOCK == 1000230493:
   CALL 0x0i2340923092340923409:
     Args:
       0xfffffff33532235234ff
@@ -8,7 +8,7 @@ WHEN_BLOCK == 1000230493:
       
 
 //some repetitive automated action
-EVERY_10_BLOCKS == 1000230493:
+EVERY 10 BLOCKS == 1000230493:
   CALL 0x0i2340923092340923409:
     Args:
       0xfffffff33532235234ff
