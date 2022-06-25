@@ -122,11 +122,10 @@ func main() {
 
 	ast := &YamlFile{}
 
-	fileContents := `when block 123093
-	
-	`
+	fileContents := `when block 123093`
 
-	err := parser.ParseString("name", fileContents, ast)
+	//TODO: change to parse and read in yaml file and parse
+	err := parser.ParseString("fileName", fileContents, ast)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
