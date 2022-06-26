@@ -52,7 +52,7 @@
                                                                       :!??!:.                     
                                                                            ...                    
 ```
-
+----------- more information available on https://internal.conveyorlabs.org/automato/ -----------
 
 Automato is a simple to use framework that enables customizable smart contract automation through lightweight .yaml files. Automato is written in Golang and can be compiled for mac, windows, and linux. Automato works with any EVM compatible blockchain, side-chain or Layer 2. 
 To automate a smart contract, you can set up triggers and actions in the automation.yaml file.  You can set up the trigger to execute every "x" blocks, at a specific block or when a specific event is emitted. After adding triggers, you can add actions, which are transactions to send after the trigger is met
