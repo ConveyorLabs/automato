@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/alecthomas/participle/v2"
-	"github.com/alecthomas/repr"
 )
 
 func TestAddress(t *testing.T) {
@@ -194,8 +193,6 @@ func TestActions(t *testing.T) {
 		t.Fail()
 	}
 
-	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
-
 }
 
 func TestAutomationTask(t *testing.T) {
@@ -219,8 +216,6 @@ func TestAutomationTask(t *testing.T) {
 		t.Fail()
 	}
 
-	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
-
 }
 
 func TestYamlFile(t *testing.T) {
@@ -238,14 +233,31 @@ func TestYamlFile(t *testing.T) {
 		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
 	WHEN BLOCK == 1000230493:
 		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
-  `
+  
+		EVERY BLOCK:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig(address,uint256), 2923409234, 092309234)
+	WHEN BLOCK == 1000230493:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+  
+	
+		WHEN BLOCK == 23034093409234:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+	WHEN BLOCK == 1000230493:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+  
+	
+		ON EVENT 0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+	WHEN BLOCK == 1000230493:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+  
 
+
+	`
 	err := localParser.ParseString("fileName", fileContents, ast)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
-
-	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
 
 }
