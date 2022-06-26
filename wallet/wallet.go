@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,9 +25,10 @@ type EOA struct {
 	SignerAddress common.Address
 	Signer        types.Signer
 	PrivateKey    *ecdsa.PrivateKey
+	signerMutex   *sync.Mutex
 }
 
-func InitializeEOAFromConfig() {
+func InitializeEOA() {
 
 	wallet := os.Getenv("WALLET_ADDRESS")
 	wallet, err := toChecksumAddress(wallet)
@@ -52,6 +55,7 @@ func InitializeEOAFromConfig() {
 		SignerAddress: common.HexToAddress(wallet),
 		Signer:        types.LatestSignerForChainID(chainIdBigInt),
 		PrivateKey:    pk,
+		signerMutex:   &sync.Mutex{},
 	}
 
 }
@@ -120,6 +124,9 @@ func toChecksumAddress(address string) (string, error) {
 
 func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue *big.Int, gas uint64, gasTipCap *big.Int, gasFeeCap *big.Int) {
 
+	//lock the mutex so only one tx can be sent at a time. The most recently sent transaction must be confirmed
+	//before the next transaction can be sent
+	e.signerMutex.Lock()
 	//get wallet nonce
 	nonce, err := rpcClient.HTTPClient.NonceAt(context.Background(), e.SignerAddress, nil)
 	if err != nil {
@@ -156,4 +163,25 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 		os.Exit(1)
 	}
 
+	//wait for the tx to complete
+	WaitForTransactionToComplete(signedTx.Hash())
+
+	//unlock the signer mutex
+	e.signerMutex.Unlock()
+}
+
+func WaitForTransactionToComplete(txHash common.Hash) *types.Transaction {
+	for {
+		confirmedTx, pending, err := rpcClient.HTTPClient.TransactionByHash(context.Background(), txHash)
+		if err != nil {
+			fmt.Println("Err when getting transaction by hash", err)
+			//TODO: In the future, handle errors gracefully
+			os.Exit(1)
+		}
+		if !pending {
+			return confirmedTx
+		}
+
+		time.Sleep(time.Second * time.Duration(1))
+	}
 }
