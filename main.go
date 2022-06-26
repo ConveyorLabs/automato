@@ -5,11 +5,16 @@ import (
 	yamlParser "automato/yaml_parser"
 	"fmt"
 	"os"
+	"sync"
 
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	//create a new wait group that waits unitl all tasks are finished
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+
 	//Load the environment variables
 	err := godotenv.Load()
 	if err != nil {
@@ -21,10 +26,13 @@ func main() {
 	// rpcClient.Initialize(os.Getenv("HTTP_NODE_URL"), os.Getenv("WS_NODE_URL"))
 
 	//Parse the automation.yaml file
-	yamlParser.ParseAutomationYaml()
+	ast := yamlParser.ParseAutomationYaml()
 
-	core.GenerateAutomationTasks()
+	automationTasks := core.GenerateAutomationTasks(ast)
 
-	core.StartAutomation()
+	//start listening to block headers and automate tasks
+	go core.StartAutomation(automationTasks)
+
+	wg.Wait()
 
 }

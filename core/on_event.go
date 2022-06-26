@@ -1,11 +1,12 @@
 package core
 
+import "github.com/ethereum/go-ethereum/core/types"
+
 type OnEvent struct {
 	EventSignature    bool
-	ExecutionFunction func() bool
+	executionFunction func() bool
 }
 
-func (o *OnEvent) evaluate() bool {
+func (o *OnEvent) EvaluateAndExecute(block *types.Block) {
 
-	return true
 }
