@@ -11,9 +11,13 @@ type WhenBlock struct {
 	executionFunction func() bool
 }
 
-func (w *WhenBlock) EvaluateAndExecute(block *types.Block) {
+func (w WhenBlock) EvaluateAndExecute(block *types.Block) {
 	if block.Number().Cmp(w.executionBlock) == 0 {
 		w.executionFunction()
 	}
 
+}
+
+func newWhenBlock(executionBlock *big.Int) WhenBlock {
+	return WhenBlock{executionBlock: executionBlock}
 }

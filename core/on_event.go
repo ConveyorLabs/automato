@@ -7,6 +7,12 @@ type OnEvent struct {
 	executionFunction func() bool
 }
 
-func (o *OnEvent) EvaluateAndExecute(block *types.Block) {
+func (o OnEvent) EvaluateAndExecute(block *types.Block) {
+
+}
+
+func newOnEvent(onEvent string) OnEvent {
+
+	return OnEvent{}
 
 }

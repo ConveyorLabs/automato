@@ -6,73 +6,38 @@ import (
 	"context"
 	"fmt"
 	"math/big"
-	"reflect"
 
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type AutomationTask interface {
-	EvaluateAndExecute(*types.Block) bool
-}
-
-type Action struct {
-	isTX           bool
-	messageContent MessageContent
-}
-
-type MessageContent struct {
-	address           string
-	functionSignature string
+	EvaluateAndExecute(block *types.Block)
 }
 
 func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 
 	//create new automation task
-
-	//add to automation task list
 	automationTasks := []AutomationTask{}
+	//add to automation task list
 	for _, at := range ast.AutomationTasks {
-		automationTask := at
 
-		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.BlockInterval) {
-			newBlockInterval := BlockInterval{}
-			newBlockInterval.Interval = new(big.Int).SetInt64(automationTask.Trigger.BlockInterval)
-
-			// for _, action := range automationTask.Actions.Actions {
-			// 	if reflect.DeepEqual(action, at.Actions.Actions.Tx) {
-			// 	}
-			// }
-
-			newAction := Action{}
-			newAction.isTX = true
-			newMessageContent := MessageContent{}
-			newMessageContent.address = automationTask.Actions.Actions[0].Tx.Tx[:32]
-			newMessageContent.functionSignature = automationTask.Actions.Actions[0].Tx.Tx[32:]
-			newAction.messageContent = newMessageContent
-
-		}
-
-		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.OnEvent) {
-			newAction := Action{}
-			newAction.isTX = true
-			newMessageContent := MessageContent{}
-			newMessageContent.address = automationTask.Actions.Actions[0].Tx.Tx[:32]
-			newMessageContent.functionSignature = automationTask.Actions.Actions[0].Tx.Tx[32:]
-			newAction.messageContent = newMessageContent
-
-		}
-
-		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.WhenBlock) {
-			newAction := Action{}
-			newAction.isTX = true
-			newMessageContent := MessageContent{}
-			newMessageContent.address = automationTask.Actions.Actions[0].Tx.Tx[:32]
-			newMessageContent.functionSignature = automationTask.Actions.Actions[0].Tx.Tx[32:]
-			newAction.messageContent = newMessageContent
-		}
+		newAutomationTask := newAutomationTaskFromASTTrigger(at.Trigger)
+		automationTasks = append(automationTasks, newAutomationTask)
 	}
 
 	return automationTasks
+}
+
+func newAutomationTaskFromASTTrigger(astTrigger *yamlParser.Trigger) AutomationTask {
+	if astTrigger.BlockInterval != 0 {
+		return newBlockInterval(big.NewInt(int64(astTrigger.BlockInterval)))
+	} else if astTrigger.WhenBlock != 0 {
+		return newWhenBlock(big.NewInt(int64(astTrigger.WhenBlock)))
+	} else if astTrigger.OnEvent != "" {
+		return newOnEvent(astTrigger.OnEvent)
+	} else {
+		return newBlockInterval(big.NewInt(0))
+	}
 }
 
 func StartAutomation(automationTasks []AutomationTask) {
