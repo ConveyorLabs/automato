@@ -32,9 +32,20 @@ type Trigger interface {
 func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 
 	for _, at := range ast.AutomationTasks {
-		automationTask := at
-		trigger := automationTask.Trigger
-		action := automationTask.Actions
+
+		trigger := at.Trigger
+
+		//if the trigger is a when block
+		if trigger == yamlParser.WHENBLockType{
+			
+			newWhenBlock:=WhenBlock{}
+
+
+		} else if trigger == &yamlParser.Trigger{}{
+			
+		}else if trigger == OtherTypefromparser{}
+
+
 
 	}
 	//create new automation task
