@@ -5,6 +5,8 @@ import (
 	yamlParser "automato/yaml_parser"
 	"context"
 	"fmt"
+	"math/big"
+	"reflect"
 
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -19,8 +21,8 @@ type Action struct {
 }
 
 type MessageContent struct {
-	address           bool
-	functionSignature bool
+	address           string
+	functionSignature string
 }
 
 func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
@@ -28,8 +30,39 @@ func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 	//create new automation task
 
 	//add to automation task list
+	automationTasks := []AutomationTask{}
+	for _, at := range ast.AutomationTasks {
+		automationTask := at
 
-	return []AutomationTask{}
+		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.BlockInterval) {
+			newBlockInterval := BlockInterval{}
+			newBlockInterval.Interval = big.NewInt(automationTask.Trigger.BlockInterval)
+			// for _, action := range automationTask.Actions.Actions {
+			// 	if reflect.DeepEqual(action, at.Actions.Actions.Tx) {
+
+			// 	}
+			// }
+
+			newAction := Action{}
+			newAction.isTX = true
+			newMessageContent := MessageContent{}
+			newMessageContent.address = automationTask.Actions.Actions[0].Tx.Tx[:32]
+			newMessageContent.functionSignature = automationTask.Actions.Actions[0].Tx.Tx[32:]
+			newAction.messageContent = newMessageContent
+
+		}
+
+		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.OnEvent) {
+
+		}
+
+		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.WhenBlock) {
+
+		}
+
+	}
+
+	return automationTasks
 }
 
 func StartAutomation(automationTasks []AutomationTask) {
