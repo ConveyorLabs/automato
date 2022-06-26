@@ -69,7 +69,7 @@ func TestTriggerConditions(t *testing.T) {
 	//test on event
 	ast = &Trigger{}
 
-	fileContents = "ON EVENT 0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c:"
+	fileContents = "ON EVENT 0x000000000000000000000000000000000000dEaD(0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c):"
 
 	err = localParser.ParseString("fileName", fileContents, ast)
 	if err != nil {
@@ -246,9 +246,10 @@ func TestYamlFile(t *testing.T) {
 		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
   
 	
-		ON EVENT 0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c:
+	ON EVENT 0x000000000000000000000000000000000000dEaD(0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c):
 		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
-	WHEN BLOCK == 1000230493:
+	
+		WHEN BLOCK == 1000230493:
 		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
   
 

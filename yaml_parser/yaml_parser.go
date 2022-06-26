@@ -46,7 +46,7 @@ type Actions struct {
 type Trigger struct {
 	//TODO: how to do ors
 	WhenBlock       int    `"WHEN" "BLOCK" Eq @Number Colon`
-	OnEvent         string `| "ON" "EVENT" @EventSignature Colon`
+	OnEvent         string `| "ON" "EVENT" @EventIdentifier Colon`
 	BlockInterval   int    `| (("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")) Colon`
 	SecondsInterval int    `| (("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")) Colon`
 }
@@ -77,8 +77,8 @@ var (
 	yamlLexer = lexer.MustSimple([]lexer.SimpleRule{
 		//If you got here, please dont look at this regex
 		{"FunctionCall", `0[xX][0-9a-fA-F]{40}\([a-zA-Z]+\([a-zA-Z0-9]*(,[a-zA-Z0-9]*)*\)(\s*,\s*[a-zA-Z0-9]+\s*)*\)`},
+		{"EventIdentifier", `0[xX][0-9a-fA-F]{40}\(0[xX][0-9a-fA-F]{64}\)`},
 		{"Comment", `(?:#|//)[^\n]*\n?`},
-		{"EventSignature", `0[xX][0-9a-fA-F]{64}`},
 		{"Address", `0[xX][0-9a-fA-F]{40}`},
 		{"Identifier", `[a-zA-Z]\w*`},
 		{"Number", `(?:\d*\.)?\d+`},
