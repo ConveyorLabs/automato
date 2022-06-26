@@ -7,28 +7,24 @@ import (
 
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
-	"github.com/alecthomas/repr"
 )
 
 func ParseAutomationYaml() {
 
 	ast := &YamlFile{}
 
-	f, err := ioutil.ReadFile("automation.yaml")
+	b, err := ioutil.ReadFile("automation.yaml")
 	if err != nil {
 		panic(err)
 	}
 
-	stringF := string(f)
-	fmt.Println(stringF)
-	//TODO: change to parse and read in yaml file and parse
-	err = parser.ParseString("filename", stringF, ast)
+	fileAsString := string(b)
+	err = parser.ParseString("filename", fileAsString, ast)
 	if err != nil {
+		fmt.Println("Issue when parsing the automation.yaml file")
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	repr.Println(ast)
 
 }
 
