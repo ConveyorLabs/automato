@@ -4,7 +4,9 @@ import (
 	"automato/wallet"
 	yamlParser "automato/yaml_parser"
 	"math/big"
+	"strings"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -12,6 +14,16 @@ type OnEvent struct {
 	EventSignature    bool
 	executionFunction func() bool
 	Actions           []TX
+	TopicAddress      *common.Address
+	TopicHash         common.Hash
+}
+
+func unpackTopicHash(hash string) (*common.Address, common.Hash) {
+	hashSplit := strings.Split(hash, "(")
+	address := common.HexToAddress(hashSplit[0])
+
+	topicHash := common.HexToHash(strings.Split(hashSplit[1], ")")[0])
+	return &address, *topicHash
 }
 
 func (o OnEvent) EvaluateAndExecute(block *types.Block) {

@@ -19,7 +19,6 @@ type AutomationTask interface {
 }
 
 func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
-
 	//create new automation task
 	automationTasks := []AutomationTask{}
 	//add to automation task list
@@ -27,7 +26,6 @@ func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 
 		newAutomationTask := newAutomationTaskFromASTTrigger(at.Trigger, at.Actions)
 		automationTasks = append(automationTasks, newAutomationTask)
-
 	}
 
 	return automationTasks
