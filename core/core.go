@@ -1,6 +1,9 @@
 package core
 
-import yamlParser "automato/yaml_parser"
+import (
+	yamlParser "automato/yaml_parser"
+	"math/big"
+)
 
 type AutomationTask struct {
 	AutomationTask Task
@@ -32,6 +35,24 @@ type Trigger interface {
 func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 
 	for _, at := range ast.AutomationTasks {
+		//Generate all automation tasks in new Automation tasks array  
+		trigger := at.Trigger
+		actions := at.Actions
+		//if the trigger is a when block
+		if trigger == yamlParser.WHENBLockType{
+			
+			newWhenBlock:=WhenBlock{big.NewInt(trigger.WhenBlock)}
+			for _, action := range at.Actions.Actions {
+				 
+			}
+
+
+		} else if trigger == yamlParser.Trigger.OnEvent{
+			// newOnEvent:= OnEvent{trigger.OnEvent}
+
+		}else if trigger == yamlParser.Trigger.SecondsInterval{
+			newSecondsInterval := 
+		}
 
 		// trigger := automationTask.Trigger
 		// action := automationTask.Actions

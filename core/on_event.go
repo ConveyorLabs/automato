@@ -1,8 +1,8 @@
 package core
 
 type OnEvent struct {
-	EventSignature    bool
-	ExecutionFunction func() bool
+	EventSignature    string
+	ExecutionFunction func() string
 }
 
 func (o *OnEvent) evaluate() bool {

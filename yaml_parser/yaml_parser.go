@@ -26,6 +26,8 @@ func ParseAutomationYaml() {
 		os.Exit(1)
 	}
 
+	return ast
+
 }
 
 type YamlFile struct {
