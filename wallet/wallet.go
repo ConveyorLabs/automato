@@ -148,19 +148,19 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 	//before the next transaction can be sent
 	Wallet.signerMutex.Lock()
 
-	block, err := rpcClient.HTTPClient.BlockByNumber(context.Background(), nil)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	// block, err := rpcClient.HTTPClient.BlockByNumber(context.Background(), nil)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	os.Exit(1)
+	// }
 
 	//hard coding gas for the short term during the hackathon
 	tx := types.NewTx(&types.DynamicFeeTx{
 		ChainID:   big.NewInt(1),
 		Nonce:     Wallet.Nonce,
-		GasFeeCap: big.NewInt(1).Add(block.BaseFee(), big.NewInt(3)),
+		GasFeeCap: big.NewInt(30029295),
 		GasTipCap: big.NewInt(10),
-		Gas:       1000000,
+		Gas:       3002920,
 		To:        toAddress,
 		Value:     big.NewInt(0),
 		Data:      calldata,
