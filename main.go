@@ -1,6 +1,7 @@
 package main
 
 import (
+	"automato/core"
 	yamlParser "automato/yaml_parser"
 	"fmt"
 	"os"
@@ -21,5 +22,9 @@ func main() {
 
 	//Parse the automation.yaml file
 	yamlParser.ParseAutomationYaml()
+
+	core.GenerateAutomationTasks()
+
+	core.StartAutomation()
 
 }

@@ -18,7 +18,3 @@ func (b *BlockInterval) evaluate(blockNumber *big.Int) bool {
 	}
 
 }
-
-func (b *BlockInterval) execute() bool {
-	return b.ExecutionFunction()
-}
