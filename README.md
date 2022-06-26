@@ -52,3 +52,76 @@
                                                                       :!??!:.                     
                                                                            ...                    
 ```
+
+
+Automato is a simple to use framework that enables customizable smart contract automation through lightweight .yaml files. Automato is written in Golang and can be compiled for mac, windows, and linux. Automato works with any EVM compatible blockchain, side-chain or Layer 2. 
+To automate a smart contract, you can set up triggers and actions in the automation.yaml file.  You can set up the trigger to execute every "x" blocks, at a specific block or when a specific event is emitted. After adding triggers, you can add actions, which are transactions to send after the trigger is met
+
+Automato can be used to automate tasks like harvesting/compounding on protocols that generate yield, dollar cost averaging into a token, or buying NFTs from a newly dropped collection. 
+
+
+# Automation.yaml File Syntax
+
+To use Automato, you will need to set up the `automation.yaml` file. There are a few very simple triggers that enable Automato to know when to execute actions. Below are examples for each trigger type.
+
+
+## Trigger Conditions
+
+### EVERY "X" BLOCKS
+
+Execute an action every "x" blocks.
+```yaml
+
+EVERY 10 BLOCKS:
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+
+EVERY 5 BLOCKS:
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+
+EVERY BLOCK:
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+
+```
+
+
+### WHEN BLOCK == "X"
+
+Execute an action when the block number == "x"
+```yaml
+
+WHEN BLOCK == 15029001:
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+
+WHEN BLOCK == 15029030:
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+
+```
+
+### ON EVENT
+
+Execute an action when a specific event is emitted. The syntax is as follow. The `ON EVENT` keyword marks the beginning of the condition, followed by `contractAddress(eventSignature)`. This means that when the specified contract address emits the event signature, the trigger condition will be met.
+
+```yaml
+
+ON EVENT 0x000000000000000000000000000000000000dEaD(0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c):
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+
+```
+
+
+## Creating Actions
+
+Actions consist of user defined transactions to execute when trigger conditions are met. The syntax for an action is as follows. The `TX` keyword marks the beginning of the transaction, followed by `contractAddress(functionSignature, arg1, arg2, arg3, ect...)`. This means that the action will send a transaction to the contract address, with calldata consisting of the function signature and arguments. You do not have to enter the hashed function signature but rather a plain text version of the function definition that will be hashed by Automato. For example: `approve(address,uint256)`. 
+
+Multiple actions can be declared as a result of one trigger. For example:
+
+```yaml
+
+ON EVENT 0x000000000000000000000000000000000000dEaD(0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c):
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
+
+```
