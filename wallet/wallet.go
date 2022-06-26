@@ -156,7 +156,7 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 
 	//hard coding gas for the short term during the hackathon
 	tx := types.NewTx(&types.DynamicFeeTx{
-		ChainID: big.NewInt(137),
+		ChainID: Wallet.Signer.ChainID(),
 		Nonce:   Wallet.Nonce,
 		GasFeeCap: big.NewInt(
 			3801940),
