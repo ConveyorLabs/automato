@@ -1,6 +1,7 @@
 package main
 
 import (
+	rpcClient "automato/rpc_client"
 	yamlParser "automato/yaml_parser"
 	"fmt"
 	"os"
@@ -17,7 +18,7 @@ func main() {
 	}
 
 	//inititlaize the RPC client
-	// rpcClient.Initialize(os.Getenv("HTTP_NODE_URL"), os.Getenv("WS_NODE_URL"))
+	rpcClient.Initialize(os.Getenv("HTTP_NODE_URL"), os.Getenv("WS_NODE_URL"))
 
 	//Parse the automation.yaml file
 	yamlParser.ParseAutomationYaml()
