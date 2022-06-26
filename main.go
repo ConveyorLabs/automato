@@ -2,6 +2,7 @@ package main
 
 import (
 	"automato/core"
+	rpcClient "automato/rpc_client"
 	"automato/wallet"
 	yamlParser "automato/yaml_parser"
 	"fmt"
@@ -23,18 +24,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	// //inititlaize the RPC client
+	rpcClient.Initialize(os.Getenv("HTTP_NODE_URL"), os.Getenv("WS_NODE_URL"))
+
 	//initialize the user wallet
 	wallet.InitializeEOA()
-
-	// //inititlaize the RPC client
-	// rpcClient.Initialize(os.Getenv("HTTP_NODE_URL"), os.Getenv("WS_NODE_URL"))
 
 	//Parse the automation.yaml file
 	ast := yamlParser.ParseAutomationYaml()
 
 	automationTasks := core.GenerateAutomationTasks(ast)
 
-	//start listening to block headers and automate tasks
+	// start listening to block headers and automate tasks
 	go core.StartAutomation(automationTasks)
 
 	wg.Wait()

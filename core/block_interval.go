@@ -16,7 +16,9 @@ type BlockInterval struct {
 }
 
 func (b BlockInterval) EvaluateAndExecute(block *types.Block) {
+
 	if big.NewInt(0).Sub(block.Number(), b.LastBlockExecuted).Cmp(b.Interval) >= 0 {
+
 		for _, action := range b.Actions {
 
 			wallet.Wallet.SignAndSendTx(action.ToAddress, action.Calldata, big.NewInt(0))
@@ -39,5 +41,7 @@ func newBlockInterval(blockInterval *big.Int, astActions *yamlParser.Actions) Bl
 	}
 
 	return BlockInterval{Interval: blockInterval,
+		LastBlockExecuted: big.NewInt(0),
+
 		Actions: actions}
 }

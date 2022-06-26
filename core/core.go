@@ -64,46 +64,48 @@ func unpackStringToTransaction(transaction string) TX {
 	calldata = append(calldata, functionSig[:8]...)
 
 	//parse args
-	paramsSplit := strings.Split(functionSigSplit[1], ",")
+	if len(functionSigSplit) > 1 {
 
-	for i, param := range paramsSplit {
+		paramsSplit := strings.Split(functionSigSplit[1], ",")
 
-		//if it is the last arg in the arguments, strip the additional ")"
-		if i == len(paramsSplit)-1 {
-			lastParam := param[:len(param)-1]
+		for i, param := range paramsSplit {
+
+			//if it is the last arg in the arguments, strip the additional ")"
+			if i == len(paramsSplit)-1 {
+				lastParam := param[:len(param)-1]
+				//determine if the param is an int or an address
+				if lastParam[:2] == "0x" {
+					toAddress := common.HexToAddress(lastParam)
+					//add the address to calldata
+					calldata = append(calldata, toAddress.Bytes()...)
+				} else {
+					//if the arg is a number
+					uint256ArgBytes, err := rlp.EncodeToBytes(lastParam)
+					if err != nil {
+						fmt.Printf("Error when converting uint256 arg to bytes, param: {%s}, err:{%v}", param, err)
+					}
+
+					calldata = append(calldata, uint256ArgBytes...)
+				}
+			}
+
 			//determine if the param is an int or an address
-			if lastParam[:2] == "0x" {
-				toAddress := common.HexToAddress(lastParam)
+			if param[:2] == "0x" {
+				toAddress := common.HexToAddress(param)
 				//add the address to calldata
 				calldata = append(calldata, toAddress.Bytes()...)
 			} else {
 				//if the arg is a number
-				uint256ArgBytes, err := rlp.EncodeToBytes(lastParam)
+				uint256ArgBytes, err := rlp.EncodeToBytes(param)
 				if err != nil {
 					fmt.Printf("Error when converting uint256 arg to bytes, param: {%s}, err:{%v}", param, err)
 				}
 
 				calldata = append(calldata, uint256ArgBytes...)
 			}
+
 		}
-
-		//determine if the param is an int or an address
-		if param[:2] == "0x" {
-			toAddress := common.HexToAddress(param)
-			//add the address to calldata
-			calldata = append(calldata, toAddress.Bytes()...)
-		} else {
-			//if the arg is a number
-			uint256ArgBytes, err := rlp.EncodeToBytes(param)
-			if err != nil {
-				fmt.Printf("Error when converting uint256 arg to bytes, param: {%s}, err:{%v}", param, err)
-			}
-
-			calldata = append(calldata, uint256ArgBytes...)
-		}
-
 	}
-
 	return TX{
 		ToAddress: &toAddress,
 		Calldata:  calldata,

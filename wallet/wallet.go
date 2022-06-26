@@ -16,6 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/fatih/color"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -55,7 +56,12 @@ func InitializeEOA() {
 	signerAddress :=
 		common.HexToAddress(wallet)
 
-	nonce, err := rpcClient.HTTPClient.NonceAt(context.Background(), signerAddress, nil)
+	blockNumber, err := rpcClient.HTTPClient.BlockNumber(context.Background())
+	if err != nil {
+		fmt.Println("Error when getting block number", err)
+	}
+
+	nonce, err := rpcClient.HTTPClient.NonceAt(context.Background(), signerAddress, big.NewInt(int64(blockNumber)))
 	if err != nil {
 		fmt.Println(err)
 		//TODO: In the future, handle errors gracefully
@@ -136,50 +142,33 @@ func toChecksumAddress(address string) (string, error) {
 
 func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue *big.Int) {
 	//hardcoding gas for the hackathon for now, this is way overpaying for most operations
-	gas := uint64(10000000000000)
+	// gas := uint64(1000000)
 
 	//lock the mutex so only one tx can be sent at a time. The most recently sent transaction must be confirmed
 	//before the next transaction can be sent
 	Wallet.signerMutex.Lock()
 
-	//initialize TXData
-	tempTx := types.NewTx(&types.DynamicFeeTx{
-		ChainID:   e.Signer.ChainID(),
-		Nonce:     Wallet.Nonce,
-		GasFeeCap: big.NewInt(0),
-		GasTipCap: big.NewInt(0),
-		Gas:       gas,
-		To:        toAddress,
-		Value:     msgValue,
-		Data:      calldata,
-	})
-
 	block, err := rpcClient.HTTPClient.BlockByNumber(context.Background(), nil)
 	if err != nil {
-		fmt.Println("error when getting block by number", err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
-	//get the priority fee
-	gasTipValue := tempTx.EffectiveGasTipValue(block.BaseFee())
-	gasTipCap := big.NewInt(0).Mul(gasTipValue, big.NewInt(2))
-
-	//initialize TXData
+	//hard coding gas for the short term during the hackathon
 	tx := types.NewTx(&types.DynamicFeeTx{
-		ChainID: e.Signer.ChainID(),
-		Nonce:   Wallet.Nonce,
-		//hardcoding gas for the hackathon for now, this is way overpaying for most operations
-		GasFeeCap: big.NewInt(100000000000000),
-		//over paying for fee but will address later
-		GasTipCap: gasTipCap,
-		Gas:       gas,
+		ChainID:   big.NewInt(1),
+		Nonce:     Wallet.Nonce,
+		GasFeeCap: big.NewInt(1).Add(block.BaseFee(), big.NewInt(3)),
+		GasTipCap: big.NewInt(10),
+		Gas:       1000000,
 		To:        toAddress,
-		Value:     msgValue,
+		Value:     big.NewInt(0),
 		Data:      calldata,
 	})
 
 	signedTx, err := types.SignTx(tx, e.Signer, e.PrivateKey)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("error when signing tx", err)
 		//TODO: In the future, handle errors gracefully
 		os.Exit(1)
 	}
@@ -187,7 +176,7 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 	//send the transaction
 	txErr := rpcClient.HTTPClient.SendTransaction(context.Background(), signedTx)
 	if txErr != nil {
-		fmt.Println(err)
+		fmt.Println(txErr)
 		//TODO: In the future, handle errors gracefully
 		os.Exit(1)
 	}
@@ -199,6 +188,10 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 	Wallet.signerMutex.Unlock()
 	//wait for the tx to complete
 	// WaitForTransactionToComplete(signedTx.Hash())
+
+	// Mix up foreground and background colors, create new mixes!
+	green := color.New(color.FgGreen)
+	green.Println("Transaction Successfully Sent, hash: {%v}", signedTx.Hash())
 
 }
 
