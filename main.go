@@ -2,6 +2,7 @@ package main
 
 import (
 	"automato/core"
+	"automato/wallet"
 	yamlParser "automato/yaml_parser"
 	"fmt"
 	"os"
@@ -21,6 +22,9 @@ func main() {
 		fmt.Println("Error loading .env file variables", err)
 		os.Exit(1)
 	}
+
+	//initialize the user wallet
+	wallet.InitializeEOA()
 
 	// //inititlaize the RPC client
 	// rpcClient.Initialize(os.Getenv("HTTP_NODE_URL"), os.Getenv("WS_NODE_URL"))
