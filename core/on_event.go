@@ -10,4 +10,6 @@ func (o *OnEvent) evaluate() bool {
 	return true
 }
 
-func (o *OnEvent) execute() {}
+func (o *OnEvent) execute() bool {
+	return o.ExecutionFunction()
+}

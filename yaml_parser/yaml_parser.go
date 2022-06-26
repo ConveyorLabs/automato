@@ -14,11 +14,6 @@ func ParseAutomationYaml() {
 
 	ast := &YamlFile{}
 
-	// fileContents, err := os.ReadFile("../automation.yaml")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
 	f, err := ioutil.ReadFile("automation.yaml")
 	if err != nil {
 		panic(err)
@@ -98,7 +93,7 @@ var (
 		{"Indent", `four spaces or a tab`},
 	})
 
-	parser = participle.MustBuild(&Arg{},
+	parser = participle.MustBuild(&YamlFile{},
 		participle.Lexer(yamlLexer),
 		participle.Elide("Comment", "Whitespace"),
 		participle.UseLookahead(2),
