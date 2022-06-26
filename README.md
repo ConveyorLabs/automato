@@ -70,7 +70,7 @@ To use Automato, you will need to set up the `automation.yaml` file. There are a
 ### EVERY "X" BLOCKS
 
 Execute an action every "x" blocks.
-```yaml
+```js
 
 EVERY 10 BLOCKS:
 	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
@@ -87,7 +87,7 @@ EVERY BLOCK:
 ### WHEN BLOCK == "X"
 
 Execute an action when the block number == "x"
-```yaml
+```
 
 WHEN BLOCK == 15029001:
 	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
@@ -101,7 +101,7 @@ WHEN BLOCK == 15029030:
 
 Execute an action when a specific event is emitted. The syntax is as follow. The `ON EVENT` keyword marks the beginning of the condition, followed by `contractAddress(eventSignature)`. This means that when the specified contract address emits the event signature, the trigger condition will be met.
 
-```yaml
+```
 
 ON EVENT 0x000000000000000000000000000000000000dEaD(0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c):
 	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
@@ -115,7 +115,7 @@ Actions consist of user defined transactions to execute when trigger conditions 
 
 Multiple actions can be declared as a result of one trigger. For example:
 
-```yaml
+```
 
 ON EVENT 0x000000000000000000000000000000000000dEaD(0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c):
 	TX: 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984(approve(address,uint256), 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984, 1000)
