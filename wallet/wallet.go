@@ -119,25 +119,20 @@ func toChecksumAddress(address string) (string, error) {
 	return checksumAddress, nil
 }
 
-func signAndSendTx(toAddress *common.Address, calldata []byte, msgValue *big.Int, gas uint64, gasTipCap *big.Int, gasFeeCap *big.Int) {
+func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue *big.Int, gas uint64, gasTipCap *big.Int, gasFeeCap *big.Int) {
 
 	//get wallet nonce
-	nonce, err := rpcClient.HTTPClient.NonceAt(context.Background(), Wallet.SignerAddress, nil)
+	nonce, err := rpcClient.HTTPClient.NonceAt(context.Background(), e.SignerAddress, nil)
 	if err != nil {
 		fmt.Println(err)
 		//TODO: In the future, handle errors gracefully
 		os.Exit(1)
 	}
 
-	// //initialize txdata
-	// txData, err := OniABI.Pack("arb_market", marketId, lpAddress, loanAmount)
-	// if err != nil {
-	// 	//TODO: how to handle runtime errors
-	// 	fmt.Println(err)
-	// }
+	//initialize TXData
 
 	tx := types.NewTx(&types.DynamicFeeTx{
-		ChainID:   Wallet.Signer.ChainID(),
+		ChainID:   e.Signer.ChainID(),
 		Nonce:     nonce,
 		GasFeeCap: gasFeeCap,
 		GasTipCap: gasTipCap,
@@ -147,7 +142,7 @@ func signAndSendTx(toAddress *common.Address, calldata []byte, msgValue *big.Int
 		Data:      calldata,
 	})
 
-	signedTx, err := types.SignTx(tx, Wallet.Signer, Wallet.PrivateKey)
+	signedTx, err := types.SignTx(tx, e.Signer, e.PrivateKey)
 	if err != nil {
 		fmt.Println(err)
 		//TODO: In the future, handle errors gracefully
