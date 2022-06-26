@@ -36,10 +36,10 @@ func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 
 		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.BlockInterval) {
 			newBlockInterval := BlockInterval{}
-			newBlockInterval.Interval = big.NewInt(automationTask.Trigger.BlockInterval)
+			newBlockInterval.Interval = new(big.Int).SetInt64(automationTask.Trigger.BlockInterval)
+
 			// for _, action := range automationTask.Actions.Actions {
 			// 	if reflect.DeepEqual(action, at.Actions.Actions.Tx) {
-
 			// 	}
 			// }
 
@@ -53,13 +53,23 @@ func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 		}
 
 		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.OnEvent) {
+			newAction := Action{}
+			newAction.isTX = true
+			newMessageContent := MessageContent{}
+			newMessageContent.address = automationTask.Actions.Actions[0].Tx.Tx[:32]
+			newMessageContent.functionSignature = automationTask.Actions.Actions[0].Tx.Tx[32:]
+			newAction.messageContent = newMessageContent
 
 		}
 
 		if reflect.DeepEqual(automationTask.Trigger, at.Trigger.WhenBlock) {
-
+			newAction := Action{}
+			newAction.isTX = true
+			newMessageContent := MessageContent{}
+			newMessageContent.address = automationTask.Actions.Actions[0].Tx.Tx[:32]
+			newMessageContent.functionSignature = automationTask.Actions.Actions[0].Tx.Tx[32:]
+			newAction.messageContent = newMessageContent
 		}
-
 	}
 
 	return automationTasks
