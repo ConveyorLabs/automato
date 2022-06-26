@@ -1,9 +1,7 @@
 package main
 
 import (
-	"automato/core"
 	"automato/wallet"
-	yamlParser "automato/yaml_parser"
 	"fmt"
 	"os"
 	"sync"
