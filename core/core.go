@@ -25,14 +25,7 @@ func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 	//add to automation task list
 	for _, at := range ast.AutomationTasks {
 
-		newAutomationTask := newAutomationTaskFromASTTrigger(at.Trigger)
-
-		for _, action := range at.Actions.Actions {
-
-			automationTx := unpackStringToTransaction(action.Tx.Tx)
-
-		}
-
+		newAutomationTask := newAutomationTaskFromASTTrigger(at.Trigger, at.Actions)
 		automationTasks = append(automationTasks, newAutomationTask)
 
 	}
@@ -40,20 +33,20 @@ func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 	return automationTasks
 }
 
-func newAutomationTaskFromASTTrigger(astTrigger *yamlParser.Trigger) AutomationTask {
+func newAutomationTaskFromASTTrigger(astTrigger *yamlParser.Trigger, astActions *yamlParser.Actions) AutomationTask {
 	if astTrigger.BlockInterval != 0 {
-		return newBlockInterval(big.NewInt(int64(astTrigger.BlockInterval)))
+		return newBlockInterval(big.NewInt(int64(astTrigger.BlockInterval)), astActions)
 	} else if astTrigger.WhenBlock != 0 {
-		return newWhenBlock(big.NewInt(int64(astTrigger.WhenBlock)))
+		return newWhenBlock(big.NewInt(int64(astTrigger.WhenBlock)), astActions)
 	} else if astTrigger.OnEvent != "" {
-		return newOnEvent(astTrigger.OnEvent)
+		return newOnEvent(astTrigger.OnEvent, astActions)
 	} else {
-		return newBlockInterval(big.NewInt(0))
+		return newBlockInterval(big.NewInt(0), astActions)
 	}
 }
 
 type TX struct {
-	ToAddress common.Address
+	ToAddress *common.Address
 	Calldata  []byte
 }
 
@@ -114,7 +107,7 @@ func unpackStringToTransaction(transaction string) TX {
 	}
 
 	return TX{
-		ToAddress: toAddress,
+		ToAddress: &toAddress,
 		Calldata:  calldata,
 	}
 }

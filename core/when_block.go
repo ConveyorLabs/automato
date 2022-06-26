@@ -1,6 +1,7 @@
 package core
 
 import (
+	yamlParser "automato/yaml_parser"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/core/types"
@@ -18,6 +19,6 @@ func (w WhenBlock) EvaluateAndExecute(block *types.Block) {
 
 }
 
-func newWhenBlock(executionBlock *big.Int) WhenBlock {
+func newWhenBlock(executionBlock *big.Int, astActions *yamlParser.Actions) WhenBlock {
 	return WhenBlock{executionBlock: executionBlock}
 }

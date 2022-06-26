@@ -25,6 +25,7 @@ type EOA struct {
 	SignerAddress common.Address
 	Signer        types.Signer
 	PrivateKey    *ecdsa.PrivateKey
+	Nonce         uint64
 	signerMutex   *sync.Mutex
 }
 
@@ -51,11 +52,22 @@ func InitializeEOA() {
 		return
 	}
 
+	signerAddress :=
+		common.HexToAddress(wallet)
+
+	nonce, err := rpcClient.HTTPClient.NonceAt(context.Background(), signerAddress, nil)
+	if err != nil {
+		fmt.Println(err)
+		//TODO: In the future, handle errors gracefully
+		os.Exit(1)
+	}
+
 	Wallet = EOA{
 		SignerAddress: common.HexToAddress(wallet),
 		Signer:        types.LatestSignerForChainID(chainIdBigInt),
 		PrivateKey:    pk,
 		signerMutex:   &sync.Mutex{},
+		Nonce:         nonce,
 	}
 
 }
@@ -126,20 +138,12 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 
 	//lock the mutex so only one tx can be sent at a time. The most recently sent transaction must be confirmed
 	//before the next transaction can be sent
-	e.signerMutex.Lock()
-	//get wallet nonce
-	nonce, err := rpcClient.HTTPClient.NonceAt(context.Background(), e.SignerAddress, nil)
-	if err != nil {
-		fmt.Println(err)
-		//TODO: In the future, handle errors gracefully
-		os.Exit(1)
-	}
+	Wallet.signerMutex.Lock()
 
 	//initialize TXData
-
 	tx := types.NewTx(&types.DynamicFeeTx{
 		ChainID:   e.Signer.ChainID(),
-		Nonce:     nonce,
+		Nonce:     Wallet.Nonce,
 		GasFeeCap: gasFeeCap,
 		GasTipCap: gasTipCap,
 		Gas:       gas,
@@ -163,11 +167,14 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 		os.Exit(1)
 	}
 
-	//wait for the tx to complete
-	WaitForTransactionToComplete(signedTx.Hash())
+	//increment the nonce
+	Wallet.Nonce++
 
-	//unlock the signer mutex
-	e.signerMutex.Unlock()
+	//unlock the wallet after the nonce has been incremented to avoid collision
+	Wallet.signerMutex.Unlock()
+	//wait for the tx to complete
+	// WaitForTransactionToComplete(signedTx.Hash())
+
 }
 
 func WaitForTransactionToComplete(txHash common.Hash) *types.Transaction {
