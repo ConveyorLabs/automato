@@ -1,5 +1,7 @@
 package core
 
+import yamlParser "automato/yaml_parser"
+
 type AutomationTask struct {
 	AutomationTask Task
 }
@@ -27,13 +29,17 @@ type Trigger interface {
 	evaluate() bool
 }
 
-func GenerateAutomationTasks(ast bool) []AutomationTask {
+func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 
-	for trigger := range ast {
-		//create new automation task
+	for _, at := range ast.AutomationTasks {
+		automationTask := at
+		trigger := automationTask.Trigger
+		action := automationTask.Actions
 
-		//add to automation task list
 	}
+	//create new automation task
+
+	//add to automation task list
 
 	return []AutomationTask{}
 }

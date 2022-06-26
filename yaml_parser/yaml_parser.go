@@ -57,10 +57,10 @@ type Action struct {
 
 }
 
-type Arg struct {
-	Uint256 int    `@Number`
-	Address string `| @Address`
-}
+// type Arg struct {
+// 	Uint256 int    `@Number`
+// 	Address string `| @Address`
+// }
 
 // type Call struct {
 // 	Call string `"CALL" Colon  @FunctionCall`
