@@ -19,8 +19,6 @@ func TestAddress(t *testing.T) {
 
 	fileContents := `0x000000000000000000000000000000000000dEaD`
 
-	// `
-
 	err := localParser.ParseString("fileName", fileContents, ast)
 	if err != nil {
 		fmt.Println(err)
@@ -81,6 +79,7 @@ func TestBlockInterval(t *testing.T) {
 
 func TestTrigger(t *testing.T) {
 
+	//test when block
 	localParser := participle.MustBuild(&Trigger{},
 		participle.Lexer(yamlLexer),
 		participle.Elide("Comment", "Whitespace"),
@@ -89,17 +88,19 @@ func TestTrigger(t *testing.T) {
 
 	ast := &Trigger{}
 
-	fileContents := "WHEN BLOCK == 234034:"
+	// fileContents := "WHEN BLOCK == 234034:"
+
+	// err := localParser.ParseString("fileName", fileContents, ast)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	t.Fail()
+	// }
+
+	// //test on event
+
+	fileContents := "0x000000000000000000000000000000000000dEaD"
 
 	err := localParser.ParseString("fileName", fileContents, ast)
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	fileContents = "ON EVENT 0xfffffffffffffffffff:"
-
-	err = localParser.ParseString("fileName", fileContents, ast)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()

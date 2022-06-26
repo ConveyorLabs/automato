@@ -2,22 +2,32 @@ package yamlParser
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
-
-	"github.com/alecthomas/repr"
 
 	"github.com/alecthomas/participle/v2"
 	"github.com/alecthomas/participle/v2/lexer"
+	"github.com/alecthomas/repr"
 )
 
 func ParseAutomationYaml() {
 
 	ast := &Arg{}
 
-	fileContents := "234092340923"
+	// fileContents, err := os.ReadFile("../automation.yaml")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	f, err := ioutil.ReadFile("automation.yaml")
+	if err != nil {
+		panic(err)
+	}
+
+	stringF := string(f)
 
 	//TODO: change to parse and read in yaml file and parse
-	err := parser.ParseString("fileName", fileContents, ast)
+	err = parser.ParseString("filename", stringF, ast)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -36,13 +46,6 @@ func ParseAutomationYaml() {
 // 	Trigger *Trigger "@@*"
 // 	Actions *Actions "@@*"
 // }
-
-type Trigger struct {
-	//TODO: how to do ors
-	WhenBlock int    `"WHEN" "BLOCK" Eq @Number Colon`
-	OnEvent   string `| "ON" "EVENT" @EventSignature Colon`
-	// EveryXInterval *EveryXInterval
-}
 
 // type Actions struct {
 // 	Actions []*Action "@@*"
@@ -64,8 +67,15 @@ type Arg struct {
 	Address string `| @Address`
 }
 
+type Trigger struct {
+	//TODO: how to do ors
+	// WhenBlock int    `"WHEN" "BLOCK" Eq @Number Colon`
+	OnEvent string `@Address`
+	// EveryXInterval *EveryXInterval
+}
+
 type Tx struct {
-	Address string `Tx Colon @Address`
+	Address string `"TX" "TO" @Address Colon`
 	Args    []*Arg
 }
 
@@ -79,7 +89,9 @@ type EveryXInterval struct {
 //Lexer / Parser
 var (
 	yamlLexer = lexer.MustSimple([]lexer.SimpleRule{
+		{"EventSignature", `^(0x|0X)?[a-fA-F0-9]+`},
 		{"Comment", `(?:#|//)[^\n]*\n?`},
+
 		{"Address", `0[xX][0-9a-fA-F]{40}`},
 
 		{"Identifier", `[a-zA-Z]\w*`},
@@ -91,10 +103,8 @@ var (
 		{"Underscore", "_"},
 
 		//
-		{"EventSignature", `0[xX][0-9a-fA-F]{76}`},
+
 		//
-		{"Call", `CALL`},
-		{"Tx", `TX`},
 		//Triggers
 		// {"WhenBlock", `WHEN Underscore Block`},
 		// {"OnEvent", `On Underscore Event`},
