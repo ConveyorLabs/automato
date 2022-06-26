@@ -4,17 +4,15 @@ import "math/big"
 
 //Type to represent trigger condition that executes every X Blocks
 type BlockInterval struct {
+	TaskType          string
 	Interval          *big.Int
 	LastBlockExecuted *big.Int
-	ExecutionFunction func() bool
+	executionFunction func() bool
 }
 
-func (b *BlockInterval) evaluate(blockNumber *big.Int) bool {
+func (b *BlockInterval) evaluateAndExecute(blockNumber *big.Int) {
 	if big.NewInt(0).Sub(blockNumber, b.LastBlockExecuted).Cmp(b.Interval) >= 0 {
-		return true
-
-	} else {
-		return false
+		b.executionFunction()
 	}
 
 }

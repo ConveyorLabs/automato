@@ -1,21 +1,16 @@
 package core
 
 import (
+	rpcClient "automato/rpc_client"
 	yamlParser "automato/yaml_parser"
-	"math/big"
+	"context"
+	"fmt"
+
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
-type AutomationTask struct {
-	AutomationTask Task
-}
-
-func newAutomationTask() AutomationTask {
-
-}
-
-type Task struct {
-	trigger Trigger
-	action  Action
+type AutomationTask interface {
+	EvaluateAndExecute(*types.Block) bool
 }
 
 type Action struct {
@@ -28,30 +23,36 @@ type MessageContent struct {
 	functionSignature bool
 }
 
-type Trigger interface {
-	evaluate() bool
-}
-
 func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 
-	for _, at := range ast.AutomationTasks {
-		//Generate all automation tasks in new Automation tasks array  
-		trigger := at.Trigger
-		actions := at.Actions
-		//if the trigger is a when block
-		if trigger == yamlParser.WHENBLockType{
-			
-			newWhenBlock:=WhenBlock{big.NewInt(trigger.WhenBlock)}
-			for _, action := range at.Actions.Actions {
-				 
-			}
+	//create new automation task
 
+	//add to automation task list
 
-		} else if trigger == yamlParser.Trigger.OnEvent{
-			// newOnEvent:= OnEvent{trigger.OnEvent}
+	return []AutomationTask{}
+}
 
-		}else if trigger == yamlParser.Trigger.SecondsInterval{
-			newSecondsInterval := 
+func StartAutomation(automationTasks []AutomationTask) {
+	//create a new block header channel
+	blockHeaderChan := make(chan *types.Header)
+
+	//subscribe to block headers
+	_, err := rpcClient.WSClient.SubscribeNewHead(context.Background(), blockHeaderChan)
+	if err != nil {
+		fmt.Println("Error when subscribing to block headers", err)
+	}
+
+	//listen for block headers and execute automation tasks
+	for {
+		blockHeader := <-blockHeaderChan
+		block, err := rpcClient.HTTPClient.BlockByHash(context.Background(), blockHeader.Hash())
+		if err != nil {
+			fmt.Println("Error when getting block by hash", err)
+		}
+
+		//loop through automation tasks and execute if the evaluation condition is met
+		for _, task := range automationTasks {
+			go task.EvaluateAndExecute(block)
 		}
 
 		// trigger := automationTask.Trigger
@@ -59,9 +60,5 @@ func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 		// messageContent := MessageContent{}
 		// at.Actions.Actions
 	}
-	//create new automation task
 
-	//add to automation task list
-
-	return []AutomationTask{}
 }
