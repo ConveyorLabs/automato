@@ -19,11 +19,7 @@ func (w WhenBlock) EvaluateAndExecute(block *types.Block) {
 		// w.executionFunction()
 		for _, action := range w.Actions {
 
-			gas := uint64(0)
-			gasTipCap := big.NewInt(0)
-			gasFeeCap := big.NewInt(0)
-
-			wallet.Wallet.SignAndSendTx(action.ToAddress, action.Calldata, big.NewInt(0), gas, gasTipCap, gasFeeCap)
+			wallet.Wallet.SignAndSendTx(action.ToAddress, action.Calldata, big.NewInt(0))
 
 		}
 	}

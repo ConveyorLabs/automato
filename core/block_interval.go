@@ -19,11 +19,7 @@ func (b BlockInterval) EvaluateAndExecute(block *types.Block) {
 	if big.NewInt(0).Sub(block.Number(), b.LastBlockExecuted).Cmp(b.Interval) >= 0 {
 		for _, action := range b.Actions {
 
-			gas := uint64(0)
-			gasTipCap := big.NewInt(0)
-			gasFeeCap := big.NewInt(0)
-
-			wallet.Wallet.SignAndSendTx(action.ToAddress, action.Calldata, big.NewInt(0), gas, gasTipCap, gasFeeCap)
+			wallet.Wallet.SignAndSendTx(action.ToAddress, action.Calldata, big.NewInt(0))
 
 		}
 

@@ -1,11 +1,16 @@
 package core
 
 import (
+	rpcClient "automato/rpc_client"
 	"automato/wallet"
 	yamlParser "automato/yaml_parser"
+	"context"
+	"fmt"
 	"math/big"
+	"os"
 	"strings"
 
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 )
@@ -26,14 +31,36 @@ func unpackTopicHash(hash string) (*common.Address, common.Hash) {
 }
 
 func (o OnEvent) EvaluateAndExecute(block *types.Block) {
-	for _, action := range o.Actions {
 
-		gas := uint64(0)
-		gasTipCap := big.NewInt(0)
-		gasFeeCap := big.NewInt(0)
+	blockNumber, err := rpcClient.HTTPClient.BlockNumber(context.Background())
 
-		wallet.Wallet.SignAndSendTx(action.ToAddress, action.Calldata, big.NewInt(0), gas, gasTipCap, gasFeeCap)
+	if err != nil {
+		fmt.Println("error when getting block number", err)
+		//graceful error handling incoming
+		os.Exit(1)
+	}
+	//create a filter query on the contract address
+	filter := ethereum.FilterQuery{
+		FromBlock: big.NewInt(int64(blockNumber)),
+		Addresses: []common.Address{*o.TopicAddress},
+		//add transfer event signature as a topic
+		Topics: [][]common.Hash{{o.TopicHash}},
+	}
 
+	filterLogs, filterLogError := rpcClient.HTTPClient.FilterLogs(context.Background(), filter)
+	if filterLogError != nil {
+		fmt.Println("error when getting block number", err)
+		//graceful error handling incoming
+		os.Exit(1)
+	}
+
+	if len(filterLogs) > 0 {
+
+		for _, action := range o.Actions {
+
+			wallet.Wallet.SignAndSendTx(action.ToAddress, action.Calldata, big.NewInt(0))
+
+		}
 	}
 
 }

@@ -86,9 +86,6 @@ var (
 		{"Eq", `==`},
 		{"Colon", `:`},
 		{"Underscore", "_"},
-
-		//TODO:
-		{"Indent", `four spaces or a tab`},
 	})
 
 	parser = participle.MustBuild(&YamlFile{},

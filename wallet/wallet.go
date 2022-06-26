@@ -134,17 +134,42 @@ func toChecksumAddress(address string) (string, error) {
 	return checksumAddress, nil
 }
 
-func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue *big.Int, gas uint64, gasTipCap *big.Int, gasFeeCap *big.Int) {
+func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue *big.Int) {
+	//hardcoding gas for the hackathon for now, this is way overpaying for most operations
+	gas := uint64(10000000000000)
 
 	//lock the mutex so only one tx can be sent at a time. The most recently sent transaction must be confirmed
 	//before the next transaction can be sent
 	Wallet.signerMutex.Lock()
 
 	//initialize TXData
-	tx := types.NewTx(&types.DynamicFeeTx{
+	tempTx := types.NewTx(&types.DynamicFeeTx{
 		ChainID:   e.Signer.ChainID(),
 		Nonce:     Wallet.Nonce,
-		GasFeeCap: gasFeeCap,
+		GasFeeCap: big.NewInt(0),
+		GasTipCap: big.NewInt(0),
+		Gas:       gas,
+		To:        toAddress,
+		Value:     msgValue,
+		Data:      calldata,
+	})
+
+	block, err := rpcClient.HTTPClient.BlockByNumber(context.Background(), nil)
+	if err != nil {
+		fmt.Println("error when getting block by number", err)
+	}
+
+	//get the priority fee
+	gasTipValue := tempTx.EffectiveGasTipValue(block.BaseFee())
+	gasTipCap := big.NewInt(0).Mul(gasTipValue, big.NewInt(2))
+
+	//initialize TXData
+	tx := types.NewTx(&types.DynamicFeeTx{
+		ChainID: e.Signer.ChainID(),
+		Nonce:   Wallet.Nonce,
+		//hardcoding gas for the hackathon for now, this is way overpaying for most operations
+		GasFeeCap: big.NewInt(100000000000000),
+		//over paying for fee but will address later
 		GasTipCap: gasTipCap,
 		Gas:       gas,
 		To:        toAddress,
