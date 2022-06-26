@@ -148,19 +148,20 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 	//before the next transaction can be sent
 	Wallet.signerMutex.Lock()
 
-	block, err := rpcClient.HTTPClient.BlockByNumber(context.Background(), nil)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	// block, err := rpcClient.HTTPClient.BlockByNumber(context.Background(), nil)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	os.Exit(1)
+	// }
 
 	//hard coding gas for the short term during the hackathon
 	tx := types.NewTx(&types.DynamicFeeTx{
-		ChainID:   big.NewInt(1),
-		Nonce:     Wallet.Nonce,
-		GasFeeCap: big.NewInt(1).Add(block.BaseFee(), big.NewInt(3)),
+		ChainID: big.NewInt(137),
+		Nonce:   Wallet.Nonce,
+		GasFeeCap: big.NewInt(
+			3801940),
 		GasTipCap: big.NewInt(10),
-		Gas:       1000000,
+		Gas:       2002920,
 		To:        toAddress,
 		Value:     big.NewInt(0),
 		Data:      calldata,
@@ -178,7 +179,7 @@ func (e *EOA) SignAndSendTx(toAddress *common.Address, calldata []byte, msgValue
 	if txErr != nil {
 		fmt.Println(txErr)
 		//TODO: In the future, handle errors gracefully
-		os.Exit(1)
+		os.Exit(12)
 	}
 
 	//increment the nonce
@@ -201,7 +202,7 @@ func WaitForTransactionToComplete(txHash common.Hash) *types.Transaction {
 		if err != nil {
 			fmt.Println("Err when getting transaction by hash", err)
 			//TODO: In the future, handle errors gracefully
-			os.Exit(1)
+			os.Exit(13)
 		}
 		if !pending {
 			return confirmedTx
