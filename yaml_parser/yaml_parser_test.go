@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/alecthomas/participle/v2"
+	"github.com/alecthomas/repr"
 )
 
 func TestAddress(t *testing.T) {
@@ -47,37 +48,7 @@ func TestUint256(t *testing.T) {
 
 }
 
-func TestBlockInterval(t *testing.T) {
-
-	localParser := participle.MustBuild(&EveryXInterval{},
-		participle.Lexer(yamlLexer),
-		participle.Elide("Comment", "Whitespace"),
-		participle.UseLookahead(2),
-	)
-
-	ast := &EveryXInterval{}
-
-	fileContents := "EVERY 309324 BLOCKS:"
-
-	//TODO: change to parse and read in yaml file and parse
-	err := localParser.ParseString("fileName", fileContents, ast)
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-	fileContents = "EVERY BLOCK:"
-
-	//TODO: change to parse and read in yaml file and parse
-	err = localParser.ParseString("fileName", fileContents, ast)
-	if err != nil {
-		fmt.Println(err)
-		t.Fail()
-	}
-
-}
-
-func TestTrigger(t *testing.T) {
+func TestTriggerConditions(t *testing.T) {
 
 	//test when block
 	localParser := participle.MustBuild(&Trigger{},
@@ -88,22 +59,193 @@ func TestTrigger(t *testing.T) {
 
 	ast := &Trigger{}
 
-	// fileContents := "WHEN BLOCK == 234034:"
-
-	// err := localParser.ParseString("fileName", fileContents, ast)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	t.Fail()
-	// }
-
-	// //test on event
-
-	fileContents := "0x000000000000000000000000000000000000dEaD"
+	fileContents := "WHEN BLOCK == 234034:"
 
 	err := localParser.ParseString("fileName", fileContents, ast)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
+
+	//test on event
+	ast = &Trigger{}
+
+	fileContents = "ON EVENT 0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c:"
+
+	err = localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	//test every x interval
+
+	ast = &Trigger{}
+
+	fileContents = "EVERY BLOCK:"
+
+	err = localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	//test every x blocks
+	ast = &Trigger{}
+
+	fileContents = "EVERY 309324 BLOCKS:"
+
+	err = localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	//test every block
+
+	fileContents = "EVERY BLOCK:"
+	ast = &Trigger{}
+
+	err = localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+}
+
+// func TestCall(t *testing.T) {
+
+// 	localParser := participle.MustBuild(&Call{},
+// 		participle.Lexer(yamlLexer),
+// 		participle.Elide("Comment", "Whitespace"),
+// 		participle.UseLookahead(2),
+// 	)
+
+// 	ast := &Call{}
+
+// 	fileContents := "CALL 0x000000000000000000000000000000000000dEaD(functionSig(arg1,arg2), 0x000000000000000000000000000000000000dEaD, 2093490234)"
+
+// 	err := localParser.ParseString("fileName", fileContents, ast)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		t.Fail()
+// 	}
+
+// }
+
+// func TestTx(t *testing.T) {
+
+// 	localParser := participle.MustBuild(&Tx{},
+// 		participle.Lexer(yamlLexer),
+// 		participle.Elide("Comment", "Whitespace"),
+// 		participle.UseLookahead(2),
+// 	)
+
+// 	ast := &Tx{}
+
+// 	fileContents := "TX: 0x000000000000000000000000000000000000dEaD(functionSig())"
+
+// 	// err := localParser.ParseString("fileName", fileContents, ast)
+// 	// if err != nil {
+// 	// 	fmt.Println(err)
+// 	// 	t.Fail()
+// 	// }
+
+// }
+
+func TestAction(t *testing.T) {
+
+	localParser := participle.MustBuild(&Action{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &Action{}
+
+	fileContents := "TX: 0x000000000000000000000000000000000000dEaD(functionSig())"
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+}
+
+func TestActions(t *testing.T) {
+
+	localParser := participle.MustBuild(&Actions{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &Actions{}
+
+	fileContents := `TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+
+	TX: 0x000000000000000000000000000000000000dEaD(functionSig())`
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
+
+}
+
+func TestAutomationTask(t *testing.T) {
+
+	localParser := participle.MustBuild(&AutomationTask{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &AutomationTask{}
+
+	fileContents := `
+	EVERY 10 BLOCKS:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+  `
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
+
+}
+
+func TestYamlFile(t *testing.T) {
+
+	localParser := participle.MustBuild(&YamlFile{},
+		participle.Lexer(yamlLexer),
+		participle.Elide("Comment", "Whitespace"),
+		participle.UseLookahead(2),
+	)
+
+	ast := &YamlFile{}
+
+	fileContents := `
+	EVERY 10 BLOCKS:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+	WHEN BLOCK == 1000230493:
+		TX: 0x000000000000000000000000000000000000dEaD(functionSig())
+  `
+
+	err := localParser.ParseString("fileName", fileContents, ast)
+	if err != nil {
+		fmt.Println(err)
+		t.Fail()
+	}
+
+	repr.Println(ast, repr.Indent("  "), repr.OmitEmpty(true))
 
 }

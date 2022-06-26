@@ -12,7 +12,7 @@ import (
 
 func ParseAutomationYaml() {
 
-	ast := &Arg{}
+	ast := &YamlFile{}
 
 	// fileContents, err := os.ReadFile("../automation.yaml")
 	// if err != nil {
@@ -25,7 +25,7 @@ func ParseAutomationYaml() {
 	}
 
 	stringF := string(f)
-
+	fmt.Println(stringF)
 	//TODO: change to parse and read in yaml file and parse
 	err = parser.ParseString("filename", stringF, ast)
 	if err != nil {
@@ -37,29 +37,33 @@ func ParseAutomationYaml() {
 
 }
 
-// type YamlFile struct {
-// 	// WhenBlock *WhenBlock
-// 	AutomationTasks []*AutomationTask "@@*"
-// }
-
-// type AutomationTask struct {
-// 	Trigger *Trigger "@@*"
-// 	Actions *Actions "@@*"
-// }
-
-// type Actions struct {
-// 	Actions []*Action "@@*"
-// }
-
-type Action struct {
-	Call *Call
-	//TODO: how to do "or"
-	Tx *Tx `|`
+type YamlFile struct {
+	AutomationTasks []*AutomationTask "@@*"
 }
 
-type Call struct {
-	Address string `Call Colon @Address`
-	Args    []*Arg
+type AutomationTask struct {
+	Trigger *Trigger "@@"
+	Actions *Actions `@@`
+}
+
+type Actions struct {
+	Actions []*Action "@@*"
+}
+
+type Trigger struct {
+	//TODO: how to do ors
+	WhenBlock       int    `"WHEN" "BLOCK" Eq @Number Colon`
+	OnEvent         string `| "ON" "EVENT" @EventSignature Colon`
+	BlockInterval   int    `| (("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")) Colon`
+	SecondsInterval int    `| (("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")) Colon`
+}
+
+type Action struct {
+	Tx *Tx `@@`
+	//TODO: set it up so that it can call and get the
+	//return data to pass into a tx
+	// Call *Call
+
 }
 
 type Arg struct {
@@ -67,48 +71,28 @@ type Arg struct {
 	Address string `| @Address`
 }
 
-type Trigger struct {
-	//TODO: how to do ors
-	// WhenBlock int    `"WHEN" "BLOCK" Eq @Number Colon`
-	OnEvent string `@Address`
-	// EveryXInterval *EveryXInterval
-}
+// type Call struct {
+// 	Call string `"CALL" Colon  @FunctionCall`
+// }
 
 type Tx struct {
-	Address string `"TX" "TO" @Address Colon`
-	Args    []*Arg
-}
-
-type EveryXInterval struct {
-	BlockInterval   int `(("EVERY" @Number "BLOCKS") | ("EVERY" "BLOCK")) Colon`
-	SecondsInterval int `| (("EVERY" @Number "SECOND") | ("EVERY" "SECONDS")) Colon`
-
-	//Add more interval options
+	Tx string `"TX" Colon @FunctionCall`
 }
 
 //Lexer / Parser
 var (
 	yamlLexer = lexer.MustSimple([]lexer.SimpleRule{
-		{"EventSignature", `^(0x|0X)?[a-fA-F0-9]+`},
+		//If you got here, please dont look at this regex
+		{"FunctionCall", `0[xX][0-9a-fA-F]{40}\([a-zA-Z]+\([a-zA-Z0-9]*(,[a-zA-Z0-9]*)*\)(\s*,\s*[a-zA-Z0-9]+\s*)*\)`},
 		{"Comment", `(?:#|//)[^\n]*\n?`},
-
+		{"EventSignature", `0[xX][0-9a-fA-F]{64}`},
 		{"Address", `0[xX][0-9a-fA-F]{40}`},
-
 		{"Identifier", `[a-zA-Z]\w*`},
 		{"Number", `(?:\d*\.)?\d+`},
 		{"Whitespace", `[ \t\n\r]+`},
 		{"Eq", `==`},
 		{"Colon", `:`},
-
 		{"Underscore", "_"},
-
-		//
-
-		//
-		//Triggers
-		// {"WhenBlock", `WHEN Underscore Block`},
-		// {"OnEvent", `On Underscore Event`},
-		// {"EveryXBlock", `Every Underscore Number Underscore Block`},
 
 		//TODO:
 		{"Indent", `four spaces or a tab`},
