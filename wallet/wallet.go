@@ -20,10 +20,9 @@ import (
 var Wallet EOA
 
 type EOA struct {
-	SignerAddress      common.Address
-	Signer             types.Signer
-	PrivateKey         *ecdsa.PrivateKey
-	OniContractAddress *common.Address
+	SignerAddress common.Address
+	Signer        types.Signer
+	PrivateKey    *ecdsa.PrivateKey
 }
 
 func InitializeEOAFromConfig() {
