@@ -32,10 +32,11 @@ type Trigger interface {
 func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 
 	for _, at := range ast.AutomationTasks {
-		automationTask := at
-		trigger := automationTask.Trigger
-		action := automationTask.Actions
 
+		// trigger := automationTask.Trigger
+		// action := automationTask.Actions
+		// messageContent := MessageContent{}
+		// at.Actions.Actions
 	}
 	//create new automation task
 
