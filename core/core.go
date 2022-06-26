@@ -18,6 +18,11 @@ type AutomationTask interface {
 	EvaluateAndExecute(block *types.Block)
 }
 
+type TX struct {
+	ToAddress *common.Address
+	Calldata  []byte
+}
+
 func GenerateAutomationTasks(ast *yamlParser.YamlFile) []AutomationTask {
 	//create new automation task
 	automationTasks := []AutomationTask{}
@@ -41,11 +46,6 @@ func newAutomationTaskFromASTTrigger(astTrigger *yamlParser.Trigger, astActions 
 	} else {
 		return newBlockInterval(big.NewInt(0), astActions)
 	}
-}
-
-type TX struct {
-	ToAddress *common.Address
-	Calldata  []byte
 }
 
 func unpackStringToTransaction(transaction string) TX {

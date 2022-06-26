@@ -21,9 +21,8 @@ type OnEvent struct {
 func unpackTopicHash(hash string) (*common.Address, common.Hash) {
 	hashSplit := strings.Split(hash, "(")
 	address := common.HexToAddress(hashSplit[0])
-
 	topicHash := common.HexToHash(strings.Split(hashSplit[1], ")")[0])
-	return &address, *topicHash
+	return &address, topicHash
 }
 
 func (o OnEvent) EvaluateAndExecute(block *types.Block) {
